@@ -19,6 +19,7 @@ const badgeVariants = cva(
         glass: "bg-card/50 backdrop-blur-md border-border/50 text-foreground",
         xp: "border-transparent bg-warning text-foreground font-bold",
         streak: "border-transparent bg-accent text-accent-foreground font-bold",
+        debris: "border-transparent bg-ocean-medium/20 text-ocean-deep dark:text-ocean-light font-medium",
       },
     },
     defaultVariants: {

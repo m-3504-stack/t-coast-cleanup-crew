@@ -11,6 +11,10 @@ import VolunteerDashboard from "./pages/VolunteerDashboard";
 import DebrisReport from "./pages/DebrisReport";
 import VolunteerProfile from "./pages/VolunteerProfile";
 import CoordinatorDashboard from "./pages/CoordinatorDashboard";
+import TaskDetails from "./pages/TaskDetails";
+import TaskComplete from "./pages/TaskComplete";
+import TaskHistory from "./pages/TaskHistory";
+import Leaderboard from "./pages/Leaderboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +33,10 @@ const App = () => (
           <Route path="/volunteer" element={<VolunteerDashboard />} />
           <Route path="/volunteer/report" element={<DebrisReport />} />
           <Route path="/volunteer/profile" element={<VolunteerProfile />} />
+          <Route path="/volunteer/task/:id" element={<TaskDetails />} />
+          <Route path="/volunteer/task/:id/complete" element={<TaskComplete />} />
+          <Route path="/volunteer/history" element={<TaskHistory />} />
+          <Route path="/volunteer/leaderboard" element={<Leaderboard />} />
           <Route path="/coordinator" element={<CoordinatorDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

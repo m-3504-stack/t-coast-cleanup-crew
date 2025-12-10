@@ -115,7 +115,7 @@ export default function VolunteerDashboard() {
               <span className="text-sm font-medium">Report</span>
             </Card>
           </Link>
-          <Link to="/volunteer/tasks">
+          <Link to="/volunteer/history">
             <Card variant="interactive" className="text-center p-4">
               <div className="w-12 h-12 mx-auto mb-2 rounded-xl bg-accent flex items-center justify-center">
                 <ClipboardList className="h-6 w-6 text-accent-foreground" />
@@ -140,13 +140,15 @@ export default function VolunteerDashboard() {
               <ClipboardList className="h-5 w-5 text-primary" />
               My Assigned Tasks
             </h2>
-            <Link to="/volunteer/tasks" className="text-sm text-primary flex items-center gap-1 hover:underline">
+            <Link to="/volunteer/history" className="text-sm text-primary flex items-center gap-1 hover:underline">
               View all <ChevronRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="space-y-3">
             {tasks.map(task => (
-              <TaskCard key={task.id} {...task} />
+              <Link key={task.id} to={`/volunteer/task/${task.id}`}>
+                <TaskCard {...task} />
+              </Link>
             ))}
           </div>
         </section>
@@ -183,7 +185,7 @@ export default function VolunteerDashboard() {
               <MapPin className="h-5 w-5" />
               <span className="text-xs font-medium">Home</span>
             </Link>
-            <Link to="/volunteer/tasks" className="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground">
+            <Link to="/volunteer/history" className="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground">
               <ClipboardList className="h-5 w-5" />
               <span className="text-xs">Tasks</span>
             </Link>
