@@ -31,12 +31,12 @@ const upcomingSchedules = [
 ];
 
 const navItems = [
-  { icon: Map, label: "Hotspot Map", href: "/coordinator/hotspots", active: false },
-  { icon: FileText, label: "Reports", href: "/coordinator/reports", active: false },
-  { icon: CalendarDays, label: "Schedules", href: "/coordinator/schedules", active: false },
-  { icon: Users, label: "Volunteers", href: "/coordinator/volunteers", active: false },
-  { icon: BarChart3, label: "Metrics", href: "/coordinator/metrics", active: false },
-  { icon: Trophy, label: "Leaderboard", href: "/coordinator/leaderboard", active: false },
+  { icon: Map, label: "Hotspot Map", href: "/coordinator/hotspots" },
+  { icon: FileText, label: "Report Review", href: "/coordinator/reports" },
+  { icon: CheckCircle, label: "Task Review", href: "/coordinator/tasks" },
+  { icon: CalendarDays, label: "Schedules", href: "/coordinator/schedules" },
+  { icon: Users, label: "Volunteers", href: "/coordinator/volunteers" },
+  { icon: Trophy, label: "Leaderboard", href: "/coordinator/leaderboard" },
 ];
 
 export default function CoordinatorDashboard() {
@@ -58,12 +58,7 @@ export default function CoordinatorDashboard() {
             <Link
               key={item.label}
               to={item.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
-                item.active 
-                  ? "bg-primary text-primary-foreground" 
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               <item.icon className="h-5 w-5 flex-shrink-0" />
               {sidebarOpen && <span className="font-medium">{item.label}</span>}

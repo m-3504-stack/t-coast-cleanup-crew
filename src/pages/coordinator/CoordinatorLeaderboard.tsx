@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { 
   ArrowLeft, Trophy, Gift, Mail, TrendingUp, TrendingDown,
-  Minus, Medal, Crown, Award
+  Minus, Medal, Crown, Award, History
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -166,7 +166,7 @@ export default function CoordinatorLeaderboard() {
                   <th className="text-left p-4 text-sm font-medium text-muted-foreground">XP</th>
                   <th className="text-left p-4 text-sm font-medium text-muted-foreground">AI Accuracy</th>
                   <th className="text-left p-4 text-sm font-medium text-muted-foreground">Badges</th>
-                  <th className="text-left p-4 text-sm font-medium text-muted-foreground w-24">Actions</th>
+                  <th className="text-left p-4 text-sm font-medium text-muted-foreground w-32">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -208,15 +208,26 @@ export default function CoordinatorLeaderboard() {
                       </div>
                     </td>
                     <td className="p-4">
-                      {entry.rank <= 10 && (
+                      <div className="flex items-center gap-1">
                         <Button 
                           variant="ghost" 
                           size="sm"
-                          onClick={() => setShowRewardModal(entry.id)}
+                          asChild
                         >
-                          <Gift className="h-4 w-4" />
+                          <Link to={`/coordinator/volunteers/${entry.id}/history`}>
+                            <History className="h-4 w-4" />
+                          </Link>
                         </Button>
-                      )}
+                        {entry.rank <= 10 && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => setShowRewardModal(entry.id)}
+                          >
+                            <Gift className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

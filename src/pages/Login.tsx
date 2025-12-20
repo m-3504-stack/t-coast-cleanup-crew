@@ -4,14 +4,16 @@ import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimatedWaves } from "@/components/WaveBackground";
-import { Mail, Lock, Chrome, ArrowRight } from "lucide-react";
+import { Mail, Lock, Chrome, ArrowRight, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -97,7 +99,17 @@ export default function Login() {
                   </div>
                 </div>
 
-                <div className="text-right">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="remember" 
+                      checked={rememberMe}
+                      onCheckedChange={(checked) => setRememberMe(checked === true)}
+                    />
+                    <Label htmlFor="remember" className="text-sm font-normal cursor-pointer">
+                      Remember me
+                    </Label>
+                  </div>
                   <Link to="/forgot-password" className="text-sm text-primary hover:underline">
                     Forgot Password?
                   </Link>
@@ -136,6 +148,20 @@ export default function Login() {
                     Register Now
                   </Link>
                 </p>
+
+                <div className="w-full pt-4 border-t border-border">
+                  <Link 
+                    to="/login" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setEmail("coordinator@tcoast.gov.my");
+                    }}
+                    className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Shield className="h-4 w-4" />
+                    Are you a coordinator? Login here
+                  </Link>
+                </div>
               </CardFooter>
             </form>
           </Card>
