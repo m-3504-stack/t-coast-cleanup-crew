@@ -7,11 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { FloatingElements3D } from "@/components/FloatingElements3D";
-import { AnimatedWaves } from "@/components/WaveBackground";
-import { Mail, Lock, Chrome, ArrowRight, Shield } from "lucide-react";
+import { Mail, Lock, ArrowRight, Shield, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export default function Login() {
+export default function CoordinatorLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -23,47 +22,42 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate login
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     toast({
-      title: "Welcome back!",
-      description: "Successfully logged in to T-COAST",
+      title: "Welcome, Coordinator!",
+      description: "Successfully logged in to T-COAST Dashboard",
     });
     
-    // Check if coordinator (simple demo logic)
-    if (email.includes("coordinator")) {
-      navigate("/coordinator");
-    } else {
-      navigate("/volunteer");
-    }
+    navigate("/coordinator");
     setIsLoading(false);
   };
 
   return (
-    <div className="min-h-screen gradient-sea flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-background flex flex-col relative overflow-hidden">
       <FloatingElements3D />
-      <AnimatedWaves />
       
       <div className="flex-1 flex items-center justify-center p-4 relative z-10">
         <div className="w-full max-w-md animate-slide-up">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <Logo size="lg" />
+              <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20">
+                <Shield className="h-12 w-12 text-primary" />
+              </div>
             </div>
             <h1 className="text-2xl font-display font-bold text-foreground mb-2">
-              Terengganu Coastal Cleanup
+              Coordinator Portal
             </h1>
             <p className="text-muted-foreground">
-              AI-Assisted Coordination System
+              T-COAST Management Dashboard
             </p>
           </div>
 
-          <Card variant="glass" className="backdrop-blur-xl">
+          <Card className="backdrop-blur-xl border-primary/20">
             <CardHeader className="text-center pb-4">
-              <CardTitle>Welcome Back</CardTitle>
+              <CardTitle>Coordinator Login</CardTitle>
               <CardDescription>
-                Sign in to continue your cleanup journey
+                Access the cleanup coordination dashboard
               </CardDescription>
             </CardHeader>
             
@@ -76,7 +70,7 @@ export default function Login() {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="your@email.com"
+                      placeholder="coordinator@tcoast.gov.my"
                       className="pl-10"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -126,40 +120,17 @@ export default function Login() {
                   className="w-full"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Signing in..." : "Login"}
+                  {isLoading ? "Signing in..." : "Access Dashboard"}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
                 
-                <div className="relative w-full">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-                  </div>
-                </div>
-                
-                <Button variant="outline" size="lg" className="w-full" type="button">
-                  <Chrome className="h-4 w-4 mr-2" />
-                  Login with Google
-                </Button>
-                
-                <p className="text-sm text-center text-muted-foreground mt-2">
-                  Don't have an account?{" "}
-                  <Link to="/register" className="text-primary font-medium hover:underline">
-                    Register Now
-                  </Link>
-                </p>
-
-                <div className="w-full pt-4 border-t border-border">
-                  <Link 
-                    to="/coordinator-login"
-                    className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <Shield className="h-4 w-4" />
-                    Are you a coordinator? Login here
-                  </Link>
-                </div>
+                <Link 
+                  to="/login"
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mt-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Volunteer Login
+                </Link>
               </CardFooter>
             </form>
           </Card>

@@ -5,10 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import CoordinatorLogin from "./pages/CoordinatorLogin";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import Onboarding from "./pages/Onboarding";
 import VolunteerDashboard from "./pages/VolunteerDashboard";
+import VolunteerSettings from "./pages/VolunteerSettings";
 import DebrisReport from "./pages/DebrisReport";
 import VolunteerProfile from "./pages/VolunteerProfile";
 import CoordinatorDashboard from "./pages/CoordinatorDashboard";
@@ -24,6 +26,7 @@ import ScheduleManager from "./pages/coordinator/ScheduleManager";
 import VolunteerManagement from "./pages/coordinator/VolunteerManagement";
 import VolunteerTaskHistory from "./pages/coordinator/VolunteerTaskHistory";
 import CoordinatorLeaderboard from "./pages/coordinator/CoordinatorLeaderboard";
+import CoordinatorSettings from "./pages/coordinator/CoordinatorSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +40,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/coordinator-login" element={<CoordinatorLogin />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/onboarding" element={<Onboarding />} />
@@ -45,6 +49,7 @@ const App = () => (
           <Route path="/volunteer" element={<VolunteerDashboard />} />
           <Route path="/volunteer/report" element={<DebrisReport />} />
           <Route path="/volunteer/profile" element={<VolunteerProfile />} />
+          <Route path="/volunteer/settings" element={<VolunteerSettings />} />
           <Route path="/volunteer/task/:id" element={<TaskDetails />} />
           <Route path="/volunteer/task/:id/complete" element={<TaskComplete />} />
           <Route path="/volunteer/history" element={<TaskHistory />} />
@@ -61,6 +66,7 @@ const App = () => (
           <Route path="/coordinator/volunteers" element={<VolunteerManagement />} />
           <Route path="/coordinator/volunteers/:volunteerId/history" element={<VolunteerTaskHistory />} />
           <Route path="/coordinator/leaderboard" element={<CoordinatorLeaderboard />} />
+          <Route path="/coordinator/settings" element={<CoordinatorSettings />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
