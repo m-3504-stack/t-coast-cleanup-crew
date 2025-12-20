@@ -42,8 +42,10 @@ export default function VolunteerProfile() {
             </Button>
             <h1 className="font-display font-semibold text-lg">My Profile</h1>
           </div>
-          <Button variant="ghost" size="icon">
-            <Settings className="h-5 w-5" />
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/volunteer/settings">
+              <Settings className="h-5 w-5" />
+            </Link>
           </Button>
         </div>
       </header>

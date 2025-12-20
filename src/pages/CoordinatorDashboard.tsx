@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,9 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Map, FileText, CalendarDays, Users, BarChart3, 
   Trophy, Bell, Settings, Menu, TrendingUp, 
-  CheckCircle, Clock, AlertTriangle, MapPin
+  CheckCircle, Clock, AlertTriangle, MapPin, LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 const stats = {
   todayReports: 12,
@@ -41,7 +42,16 @@ const navItems = [
 
 export default function CoordinatorDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
+  const handleLogout = () => {
+    toast({
+      title: "Logged out",
+      description: "You have been signed out successfully",
+    });
+    navigate("/login");
+  };
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
@@ -66,7 +76,7 @@ export default function CoordinatorDashboard() {
           ))}
         </nav>
 
-        <div className="absolute bottom-4 left-0 right-0 px-3">
+        <div className="absolute bottom-4 left-0 right-0 px-3 space-y-1">
           <Link
             to="/coordinator/settings"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
@@ -74,6 +84,13 @@ export default function CoordinatorDashboard() {
             <Settings className="h-5 w-5 flex-shrink-0" />
             {sidebarOpen && <span className="font-medium">Settings</span>}
           </Link>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-destructive hover:bg-destructive/10 transition-colors"
+          >
+            <LogOut className="h-5 w-5 flex-shrink-0" />
+            {sidebarOpen && <span className="font-medium">Logout</span>}
+          </button>
         </div>
       </aside>
 

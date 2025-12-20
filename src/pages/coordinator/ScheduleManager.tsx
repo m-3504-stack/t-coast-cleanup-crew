@@ -5,10 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { 
   ArrowLeft, CalendarDays, Plus, MapPin, Users, Clock,
-  Cloud, Sun, CloudRain, AlertTriangle, Edit, Trash2, X
+  Cloud, Sun, CloudRain, AlertTriangle, Edit, Trash2, X,
+  UserPlus, Zap, GripVertical, Check
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -21,17 +23,36 @@ interface Schedule {
   priority: "high" | "medium" | "low";
   debrisType: string;
   estimatedQuantity: number;
-  assignedVolunteers: number;
+  assignedVolunteers: string[];
   requiredVolunteers: number;
   status: "upcoming" | "in-progress" | "completed";
   weather: "sunny" | "cloudy" | "rainy";
 }
 
-const schedules: Schedule[] = [
-  { id: "1", title: "Seberang Takir Beach Cleanup", location: "Seberang Takir", dateTime: "Dec 10, 2024 8:00 AM", priority: "high", debrisType: "Plastic", estimatedQuantity: 150, assignedVolunteers: 8, requiredVolunteers: 10, status: "upcoming", weather: "sunny" },
-  { id: "2", title: "Batu Buruk Drive", location: "Batu Buruk Beach", dateTime: "Dec 12, 2024 7:30 AM", priority: "medium", debrisType: "Mixed", estimatedQuantity: 80, assignedVolunteers: 5, requiredVolunteers: 6, status: "upcoming", weather: "cloudy" },
-  { id: "3", title: "Dungun Coast Cleanup", location: "Dungun Coast", dateTime: "Dec 15, 2024 8:00 AM", priority: "low", debrisType: "Fishing Gear", estimatedQuantity: 200, assignedVolunteers: 12, requiredVolunteers: 15, status: "upcoming", weather: "rainy" },
-  { id: "4", title: "Marang Beach Initiative", location: "Marang Beach", dateTime: "Dec 8, 2024 7:00 AM", priority: "high", debrisType: "Organic", estimatedQuantity: 45, assignedVolunteers: 6, requiredVolunteers: 6, status: "completed", weather: "sunny" },
+interface Volunteer {
+  id: string;
+  name: string;
+  initials: string;
+  lastActive: string;
+  totalWeight: number;
+  proximity: number;
+  assigned: boolean;
+}
+
+const volunteers: Volunteer[] = [
+  { id: "v1", name: "Ahmad Hassan", initials: "AH", lastActive: "2 hours ago", totalWeight: 87, proximity: 2.3, assigned: false },
+  { id: "v2", name: "Fatimah Zahra", initials: "FZ", lastActive: "30 min ago", totalWeight: 234, proximity: 1.5, assigned: false },
+  { id: "v3", name: "Razak Mahmud", initials: "RM", lastActive: "1 hour ago", totalWeight: 198, proximity: 3.2, assigned: false },
+  { id: "v4", name: "Siti Nurhaliza", initials: "SN", lastActive: "4 hours ago", totalWeight: 187, proximity: 4.1, assigned: false },
+  { id: "v5", name: "Hafiz Abdullah", initials: "HA", lastActive: "15 min ago", totalWeight: 156, proximity: 0.8, assigned: false },
+  { id: "v6", name: "Nurul Huda", initials: "NH", lastActive: "1 day ago", totalWeight: 142, proximity: 5.5, assigned: false },
+];
+
+const initialSchedules: Schedule[] = [
+  { id: "1", title: "Seberang Takir Beach Cleanup", location: "Seberang Takir", dateTime: "Dec 10, 2024 8:00 AM", priority: "high", debrisType: "Plastic", estimatedQuantity: 150, assignedVolunteers: ["v1", "v2", "v3"], requiredVolunteers: 10, status: "upcoming", weather: "sunny" },
+  { id: "2", title: "Batu Buruk Drive", location: "Batu Buruk Beach", dateTime: "Dec 12, 2024 7:30 AM", priority: "medium", debrisType: "Mixed", estimatedQuantity: 80, assignedVolunteers: ["v4", "v5"], requiredVolunteers: 6, status: "upcoming", weather: "cloudy" },
+  { id: "3", title: "Dungun Coast Cleanup", location: "Dungun Coast", dateTime: "Dec 15, 2024 8:00 AM", priority: "low", debrisType: "Fishing Gear", estimatedQuantity: 200, assignedVolunteers: [], requiredVolunteers: 15, status: "upcoming", weather: "rainy" },
+  { id: "4", title: "Marang Beach Initiative", location: "Marang Beach", dateTime: "Dec 8, 2024 7:00 AM", priority: "high", debrisType: "Organic", estimatedQuantity: 45, assignedVolunteers: ["v1", "v2", "v3", "v4", "v5", "v6"], requiredVolunteers: 6, status: "completed", weather: "sunny" },
 ];
 
 const WeatherIcon = ({ weather }: { weather: string }) => {
@@ -45,9 +66,10 @@ const WeatherIcon = ({ weather }: { weather: string }) => {
 
 export default function ScheduleManager() {
   const [searchParams] = useSearchParams();
-  const [scheduleList, setScheduleList] = useState(schedules);
+  const [scheduleList, setScheduleList] = useState(initialSchedules);
   const [showCreateForm, setShowCreateForm] = useState(searchParams.has("hotspot"));
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [expandedScheduleId, setExpandedScheduleId] = useState<string | null>(null);
+  const [volunteerList, setVolunteerList] = useState(volunteers);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -74,7 +96,7 @@ export default function ScheduleManager() {
       priority: formData.priority as "high" | "medium" | "low",
       debrisType: formData.debrisType,
       estimatedQuantity: parseInt(formData.estimatedQuantity) || 0,
-      assignedVolunteers: 0,
+      assignedVolunteers: [],
       requiredVolunteers: parseInt(formData.requiredVolunteers) || 5,
       status: "upcoming",
       weather: "sunny",
@@ -82,13 +104,52 @@ export default function ScheduleManager() {
     setScheduleList(prev => [newSchedule, ...prev]);
     setShowCreateForm(false);
     setFormData({ title: "", location: "", date: "", time: "08:00", priority: "medium", debrisType: "", estimatedQuantity: "", requiredVolunteers: "", notes: "" });
-    toast({ title: "Schedule created", description: "Volunteers can now be assigned" });
+    toast({ title: "Schedule created", description: "You can now assign volunteers" });
   };
 
   const handleDelete = (id: string) => {
     setScheduleList(prev => prev.filter(s => s.id !== id));
     toast({ title: "Schedule deleted", variant: "destructive" });
   };
+
+  const toggleVolunteerAssignment = (scheduleId: string, volunteerId: string) => {
+    setScheduleList(prev => prev.map(s => {
+      if (s.id !== scheduleId) return s;
+      const isAssigned = s.assignedVolunteers.includes(volunteerId);
+      return {
+        ...s,
+        assignedVolunteers: isAssigned 
+          ? s.assignedVolunteers.filter(v => v !== volunteerId)
+          : [...s.assignedVolunteers, volunteerId]
+      };
+    }));
+  };
+
+  const autoAssignVolunteers = (scheduleId: string) => {
+    const schedule = scheduleList.find(s => s.id === scheduleId);
+    if (!schedule) return;
+
+    const needed = schedule.requiredVolunteers - schedule.assignedVolunteers.length;
+    if (needed <= 0) return;
+
+    // Sort by proximity and assign
+    const available = volunteerList
+      .filter(v => !schedule.assignedVolunteers.includes(v.id))
+      .sort((a, b) => a.proximity - b.proximity)
+      .slice(0, needed);
+
+    setScheduleList(prev => prev.map(s => {
+      if (s.id !== scheduleId) return s;
+      return {
+        ...s,
+        assignedVolunteers: [...s.assignedVolunteers, ...available.map(v => v.id)]
+      };
+    }));
+
+    toast({ title: `${available.length} volunteers auto-assigned`, description: "Based on proximity" });
+  };
+
+  const getVolunteerById = (id: string) => volunteerList.find(v => v.id === id);
 
   return (
     <div className="min-h-screen bg-background">
@@ -103,7 +164,7 @@ export default function ScheduleManager() {
             </Button>
             <div>
               <h1 className="font-display font-bold text-lg">Cleanup Schedules</h1>
-              <p className="text-xs text-muted-foreground">{upcomingSchedules.length} upcoming</p>
+              <p className="text-xs text-muted-foreground">{upcomingSchedules.length} upcoming • Manage volunteers inline</p>
             </div>
           </div>
           <Button onClick={() => setShowCreateForm(true)}>
@@ -225,15 +286,15 @@ export default function ScheduleManager() {
           </Card>
         )}
 
-        {/* Upcoming Schedules */}
+        {/* Upcoming Schedules with Inline Volunteer Assignment */}
         <section>
           <h2 className="font-display font-semibold text-lg mb-4">Upcoming (Next 7 Days)</h2>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {upcomingSchedules.map(schedule => (
               <Card 
                 key={schedule.id}
                 className={cn(
-                  "border-l-4",
+                  "border-l-4 overflow-hidden",
                   schedule.priority === "high" && "border-l-destructive",
                   schedule.priority === "medium" && "border-l-warning",
                   schedule.priority === "low" && "border-l-muted-foreground"
@@ -271,9 +332,9 @@ export default function ScheduleManager() {
                           <Users className="h-4 w-4 text-muted-foreground" />
                           <span className={cn(
                             "font-medium",
-                            schedule.assignedVolunteers < schedule.requiredVolunteers && "text-warning"
+                            schedule.assignedVolunteers.length < schedule.requiredVolunteers && "text-warning"
                           )}>
-                            {schedule.assignedVolunteers}/{schedule.requiredVolunteers}
+                            {schedule.assignedVolunteers.length}/{schedule.requiredVolunteers}
                           </span>
                         </div>
                         <p className="text-xs text-muted-foreground">volunteers</p>
@@ -283,10 +344,12 @@ export default function ScheduleManager() {
                         <p className="text-xs text-muted-foreground">estimated</p>
                       </div>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" asChild>
-                          <Link to={`/coordinator/volunteers?schedule=${schedule.id}`}>
-                            <Users className="h-4 w-4" />
-                          </Link>
+                        <Button 
+                          variant={expandedScheduleId === schedule.id ? "secondary" : "ghost"} 
+                          size="icon"
+                          onClick={() => setExpandedScheduleId(expandedScheduleId === schedule.id ? null : schedule.id)}
+                        >
+                          <UserPlus className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon">
                           <Edit className="h-4 w-4" />
@@ -298,13 +361,99 @@ export default function ScheduleManager() {
                     </div>
                   </div>
 
-                  {schedule.assignedVolunteers < schedule.requiredVolunteers && (
-                    <div className="mt-3 p-2 rounded-lg bg-warning/10 flex items-center gap-2 text-sm text-warning">
-                      <AlertTriangle className="h-4 w-4" />
-                      Needs {schedule.requiredVolunteers - schedule.assignedVolunteers} more volunteers
+                  {schedule.assignedVolunteers.length < schedule.requiredVolunteers && (
+                    <div className="mt-3 p-2 rounded-lg bg-warning/10 flex items-center justify-between text-sm text-warning">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        Needs {schedule.requiredVolunteers - schedule.assignedVolunteers.length} more volunteers
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-warning hover:text-warning"
+                        onClick={() => autoAssignVolunteers(schedule.id)}
+                      >
+                        <Zap className="h-4 w-4 mr-1" />
+                        Auto-Assign
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Assigned Volunteers Preview */}
+                  {schedule.assignedVolunteers.length > 0 && expandedScheduleId !== schedule.id && (
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Assigned:</span>
+                      <div className="flex -space-x-2">
+                        {schedule.assignedVolunteers.slice(0, 5).map(vId => {
+                          const v = getVolunteerById(vId);
+                          return v ? (
+                            <Avatar key={vId} className="h-7 w-7 border-2 border-background">
+                              <AvatarFallback className="text-xs">{v.initials}</AvatarFallback>
+                            </Avatar>
+                          ) : null;
+                        })}
+                        {schedule.assignedVolunteers.length > 5 && (
+                          <div className="h-7 w-7 rounded-full bg-muted border-2 border-background flex items-center justify-center text-xs">
+                            +{schedule.assignedVolunteers.length - 5}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </CardContent>
+
+                {/* Expanded Volunteer Assignment Panel */}
+                {expandedScheduleId === schedule.id && (
+                  <div className="border-t bg-muted/30 p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium text-sm">Assign Volunteers</h4>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => autoAssignVolunteers(schedule.id)}
+                        >
+                          <Zap className="h-3.5 w-3.5 mr-1" />
+                          Auto-Assign by Proximity
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {volunteerList.map(volunteer => {
+                        const isAssigned = schedule.assignedVolunteers.includes(volunteer.id);
+                        return (
+                          <div 
+                            key={volunteer.id}
+                            onClick={() => toggleVolunteerAssignment(schedule.id, volunteer.id)}
+                            className={cn(
+                              "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all",
+                              isAssigned 
+                                ? "border-primary bg-primary/5" 
+                                : "border-border hover:border-primary/50 hover:bg-muted/50"
+                            )}
+                          >
+                            <div className="flex items-center gap-2 flex-1">
+                              <GripVertical className="h-4 w-4 text-muted-foreground/50" />
+                              <Avatar className="h-8 w-8">
+                                <AvatarFallback className="text-xs">{volunteer.initials}</AvatarFallback>
+                              </Avatar>
+                              <div className="min-w-0">
+                                <p className="font-medium text-sm truncate">{volunteer.name}</p>
+                                <p className="text-xs text-muted-foreground">{volunteer.proximity}km away</p>
+                              </div>
+                            </div>
+                            <div className={cn(
+                              "h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors",
+                              isAssigned ? "border-primary bg-primary" : "border-muted-foreground/30"
+                            )}>
+                              {isAssigned && <Check className="h-3 w-3 text-primary-foreground" />}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </Card>
             ))}
           </div>
@@ -322,7 +471,19 @@ export default function ScheduleManager() {
                       <h3 className="font-medium">{schedule.title}</h3>
                       <p className="text-sm text-muted-foreground">{schedule.dateTime}</p>
                     </div>
-                    <Badge variant="success">Completed</Badge>
+                    <div className="flex items-center gap-3">
+                      <div className="flex -space-x-2">
+                        {schedule.assignedVolunteers.slice(0, 3).map(vId => {
+                          const v = getVolunteerById(vId);
+                          return v ? (
+                            <Avatar key={vId} className="h-6 w-6 border-2 border-background">
+                              <AvatarFallback className="text-xs">{v.initials}</AvatarFallback>
+                            </Avatar>
+                          ) : null;
+                        })}
+                      </div>
+                      <Badge variant="success">Completed</Badge>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
