@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import {
   Plus, MapPin, Calendar, ChevronRight, X, BarChart3
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 const debrisTypes = ["Plastic", "Metal", "Organic", "Fishing Gear", "Glass", "Mixed"];
 
@@ -22,14 +23,24 @@ const hotspots = [
 ];
 
 export default function HotspotMap() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [showFilters, setShowFilters] = useState(false);
   const [selectedHotspot, setSelectedHotspot] = useState<typeof hotspots[0] | null>(null);
+  const [showCreateSchedule, setShowCreateSchedule] = useState(false);
   const [filters, setFilters] = useState({
     debrisTypes: [] as string[],
     minReports: 0,
     dateRange: "30",
   });
   const [showHeatmap, setShowHeatmap] = useState(true);
+
+  const [scheduleForm, setScheduleForm] = useState({
+    title: "",
+    date: "",
+    time: "08:00",
+    requiredVolunteers: "10",
+  });
 
   const toggleDebrisType = (type: string) => {
     setFilters(prev => ({
@@ -45,6 +56,28 @@ export default function HotspotMap() {
     if (h.reportCount < filters.minReports) return false;
     return true;
   });
+
+  const handleCreateSchedule = () => {
+    if (!selectedHotspot) return;
+    
+    toast({
+      title: "Schedule Created!",
+      description: `Cleanup scheduled for ${selectedHotspot.name}`,
+    });
+    setShowCreateSchedule(false);
+    setScheduleForm({ title: "", date: "", time: "08:00", requiredVolunteers: "10" });
+    setSelectedHotspot(null);
+  };
+
+  const openScheduleForm = () => {
+    if (selectedHotspot) {
+      setScheduleForm(prev => ({
+        ...prev,
+        title: `${selectedHotspot.name} Cleanup`,
+      }));
+      setShowCreateSchedule(true);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -208,7 +241,7 @@ export default function HotspotMap() {
             </Card>
 
             {/* Hotspot Detail Modal */}
-            {selectedHotspot && (
+            {selectedHotspot && !showCreateSchedule && (
               <Card className="absolute top-4 right-4 w-96">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
@@ -289,12 +322,83 @@ export default function HotspotMap() {
                     </div>
                   </div>
 
-                  <Button className="w-full" asChild>
-                    <Link to={`/coordinator/schedules/new?hotspot=${selectedHotspot.id}`}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Create Schedule from Hotspot
-                    </Link>
+                  <Button className="w-full" onClick={openScheduleForm}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Schedule from Hotspot
                   </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Create Schedule Modal */}
+            {showCreateSchedule && selectedHotspot && (
+              <Card className="absolute top-4 right-4 w-96">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <CardTitle>Create Cleanup Schedule</CardTitle>
+                    <Button variant="ghost" size="icon" onClick={() => setShowCreateSchedule(false)}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
+                    <p className="text-sm font-medium flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-primary" />
+                      {selectedHotspot.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {selectedHotspot.debrisType} • {selectedHotspot.quantity}kg estimated
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Schedule Title</Label>
+                    <Input
+                      value={scheduleForm.title}
+                      onChange={(e) => setScheduleForm(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="e.g., Morning Beach Cleanup"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label>Date</Label>
+                      <Input
+                        type="date"
+                        value={scheduleForm.date}
+                        onChange={(e) => setScheduleForm(prev => ({ ...prev, date: e.target.value }))}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Time</Label>
+                      <Input
+                        type="time"
+                        value={scheduleForm.time}
+                        onChange={(e) => setScheduleForm(prev => ({ ...prev, time: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Required Volunteers</Label>
+                    <Input
+                      type="number"
+                      value={scheduleForm.requiredVolunteers}
+                      onChange={(e) => setScheduleForm(prev => ({ ...prev, requiredVolunteers: e.target.value }))}
+                      min={1}
+                    />
+                  </div>
+
+                  <div className="flex gap-3 pt-2">
+                    <Button variant="outline" className="flex-1" onClick={() => setShowCreateSchedule(false)}>
+                      Cancel
+                    </Button>
+                    <Button className="flex-1" onClick={handleCreateSchedule}>
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Create Schedule
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             )}
