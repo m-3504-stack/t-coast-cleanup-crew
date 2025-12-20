@@ -19,6 +19,7 @@ const buttonVariants = cva(
         coral: "bg-accent text-accent-foreground hover:bg-accent/90 shadow-md active:scale-[0.98]",
         glass: "bg-card/80 backdrop-blur-md border border-border text-foreground hover:bg-card shadow-sm",
         fab: "gradient-ocean text-primary-foreground shadow-lg hover:shadow-glow animate-pulse-soft rounded-full",
+        success: "bg-success text-success-foreground hover:bg-success/90 shadow-md active:scale-[0.98]",
       },
       size: {
         default: "h-10 px-5 py-2",
