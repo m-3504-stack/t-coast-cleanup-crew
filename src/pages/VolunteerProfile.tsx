@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,23 +6,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { AchievementsGrid, sampleBadges } from "@/components/AchievementsGrid";
 import { 
-  ArrowLeft, Settings, Share2, Scale, FileText, 
+  ArrowLeft, Settings, Scale, FileText, 
   CheckCircle, XCircle, Target, TrendingUp, Flame, Star
 } from "lucide-react";
 
 const profileData = {
-  name: "Ahmad bin Hassan",
-  email: "ahmad.hassan@email.com",
-  joinedDate: "October 2024",
-  preferredLocation: "Kuala Terengganu",
+  username: "Ahmad bin Hassan",
+  userEmail: "ahmad.hassan@email.com",
+  userCreatedAt: "October 2024",
+  userPreferredLocation: "Kuala Terengganu",
   stats: {
-    totalVerifiedWeight: 87,
-    totalReports: 34,
+    volunteerTotalVerifiedWeight: 87,
+    volunteerTotalReportCount: 34,
     verifiedReports: 28,
     unverifiedReports: 6,
-    aiAccuracyScore: 82,
-    xpPoints: 1250,
-    streak: 7,
+    volunteerAiAccuracyScore: 82,
+    volunteerXpPoints: 1250,
+    volunteerDailyStreak: 7,
     rank: 12,
   },
 };
@@ -59,11 +58,11 @@ export default function VolunteerProfile() {
               AH
             </AvatarFallback>
           </Avatar>
-          <h2 className="text-xl font-display font-bold">{profileData.name}</h2>
-          <p className="text-sm text-muted-foreground">{profileData.email}</p>
+          <h2 className="text-xl font-display font-bold">{profileData.username}</h2>
+          <p className="text-sm text-muted-foreground">{profileData.userEmail}</p>
           <div className="flex items-center justify-center gap-2 mt-2">
             <Badge variant="ocean">Rank #{profileData.stats.rank}</Badge>
-            <Badge variant="secondary">{profileData.preferredLocation}</Badge>
+            <Badge variant="secondary">{profileData.userPreferredLocation}</Badge>
           </div>
         </div>
 
@@ -90,7 +89,7 @@ export default function VolunteerProfile() {
                       stroke="currentColor"
                       strokeWidth="8"
                       fill="none"
-                      strokeDasharray={`${(profileData.stats.totalVerifiedWeight / 100) * 226} 226`}
+                      strokeDasharray={`${(profileData.stats.volunteerTotalVerifiedWeight / 100) * 226} 226`}
                       className="text-primary"
                     />
                   </svg>
@@ -98,7 +97,7 @@ export default function VolunteerProfile() {
                     <Scale className="h-6 w-6 text-primary" />
                   </div>
                 </div>
-                <p className="font-bold text-lg">{profileData.stats.totalVerifiedWeight}kg</p>
+                <p className="font-bold text-lg">{profileData.stats.volunteerTotalVerifiedWeight}kg</p>
                 <p className="text-xs text-muted-foreground">Verified</p>
               </div>
 
@@ -121,7 +120,7 @@ export default function VolunteerProfile() {
                       stroke="currentColor"
                       strokeWidth="8"
                       fill="none"
-                      strokeDasharray={`${(profileData.stats.aiAccuracyScore / 100) * 226} 226`}
+                      strokeDasharray={`${(profileData.stats.volunteerAiAccuracyScore / 100) * 226} 226`}
                       className="text-success"
                     />
                   </svg>
@@ -129,7 +128,7 @@ export default function VolunteerProfile() {
                     <Target className="h-6 w-6 text-success" />
                   </div>
                 </div>
-                <p className="font-bold text-lg">{profileData.stats.aiAccuracyScore}%</p>
+                <p className="font-bold text-lg">{profileData.stats.volunteerAiAccuracyScore}%</p>
                 <p className="text-xs text-muted-foreground">AI Accuracy</p>
               </div>
 
@@ -152,7 +151,7 @@ export default function VolunteerProfile() {
                       stroke="currentColor"
                       strokeWidth="8"
                       fill="none"
-                      strokeDasharray={`${(profileData.stats.verifiedReports / profileData.stats.totalReports) * 226} 226`}
+                      strokeDasharray={`${(profileData.stats.verifiedReports / profileData.stats.volunteerTotalReportCount) * 226} 226`}
                       className="text-warning"
                     />
                   </svg>
@@ -160,7 +159,7 @@ export default function VolunteerProfile() {
                     <FileText className="h-6 w-6 text-warning" />
                   </div>
                 </div>
-                <p className="font-bold text-lg">{profileData.stats.totalReports}</p>
+                <p className="font-bold text-lg">{profileData.stats.volunteerTotalReportCount}</p>
                 <p className="text-xs text-muted-foreground">Reports</p>
               </div>
             </div>
@@ -175,7 +174,7 @@ export default function VolunteerProfile() {
                 <Star className="h-6 w-6 text-warning" />
               </div>
               <div>
-                <p className="text-2xl font-display font-bold">{profileData.stats.xpPoints.toLocaleString()}</p>
+                <p className="text-2xl font-display font-bold">{profileData.stats.volunteerXpPoints.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">XP Points</p>
               </div>
             </CardContent>
@@ -186,7 +185,7 @@ export default function VolunteerProfile() {
                 <Flame className="h-6 w-6 text-accent" />
               </div>
               <div>
-                <p className="text-2xl font-display font-bold">{profileData.stats.streak}</p>
+                <p className="text-2xl font-display font-bold">{profileData.stats.volunteerDailyStreak}</p>
                 <p className="text-xs text-muted-foreground">Day Streak</p>
               </div>
             </CardContent>
@@ -214,11 +213,11 @@ export default function VolunteerProfile() {
               <span className="font-semibold">{profileData.stats.unverifiedReports}</span>
             </div>
             <Progress 
-              value={(profileData.stats.verifiedReports / profileData.stats.totalReports) * 100} 
+              value={(profileData.stats.verifiedReports / profileData.stats.volunteerTotalReportCount) * 100} 
               className="h-2"
             />
             <p className="text-xs text-muted-foreground text-center">
-              {Math.round((profileData.stats.verifiedReports / profileData.stats.totalReports) * 100)}% verification rate
+              {Math.round((profileData.stats.verifiedReports / profileData.stats.volunteerTotalReportCount) * 100)}% verification rate
             </p>
           </CardContent>
         </Card>
@@ -230,9 +229,9 @@ export default function VolunteerProfile() {
               <TrendingUp className="h-5 w-5 text-primary" />
               <span className="font-medium">Progress to 100kg Badge</span>
             </div>
-            <Progress value={profileData.stats.totalVerifiedWeight} className="h-3 mb-2" />
+            <Progress value={profileData.stats.volunteerTotalVerifiedWeight} className="h-3 mb-2" />
             <p className="text-sm text-muted-foreground">
-              <span className="font-bold text-foreground">{profileData.stats.totalVerifiedWeight}kg</span> of 100kg goal
+              <span className="font-bold text-foreground">{profileData.stats.volunteerTotalVerifiedWeight}kg</span> of 100kg goal
             </p>
           </CardContent>
         </Card>
@@ -242,12 +241,6 @@ export default function VolunteerProfile() {
           <h3 className="text-lg font-display font-semibold mb-4">Badges & Achievements</h3>
           <AchievementsGrid badges={sampleBadges} />
         </section>
-
-        {/* Share Impact */}
-        <Button variant="outline" size="lg" className="w-full">
-          <Share2 className="h-4 w-4 mr-2" />
-          Share My Impact
-        </Button>
       </main>
     </div>
   );
