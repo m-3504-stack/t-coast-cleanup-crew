@@ -9,112 +9,143 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { 
   ArrowLeft, CalendarDays, Plus, MapPin, Users, Clock,
-  Cloud, Sun, CloudRain, AlertTriangle, Edit, Trash2, X,
+  AlertTriangle, Edit, Trash2, X,
   UserPlus, Zap, GripVertical, Check
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
-interface Schedule {
-  id: string;
-  title: string;
-  location: string;
-  dateTime: string;
-  priority: "high" | "medium" | "low";
-  debrisType: string;
-  estimatedQuantity: number;
+interface CleanupSchedule {
+  scheduleId: string;
+  scheduleLocation: string;
+  scheduleDateTime: string;
+  schedulePriorityLevel: "high" | "medium" | "low";
+  scheduleDebrisTargetType: string;
+  scheduleEstimatedQuantity: string;
   assignedVolunteers: string[];
-  requiredVolunteers: number;
-  status: "upcoming" | "in-progress" | "completed";
-  weather: "sunny" | "cloudy" | "rainy";
+  scheduleRequiredVolunteerCount: number;
+  scheduleStatus: "UPCOMING" | "COMPLETED" | "CANCELLED";
 }
 
 interface Volunteer {
-  id: string;
-  name: string;
+  volunteerId: string;
+  volunteerName: string;
   initials: string;
   lastActive: string;
-  totalWeight: number;
+  volunteerTotalVerifiedWeight: number;
   proximity: number;
   assigned: boolean;
 }
 
 const volunteers: Volunteer[] = [
-  { id: "v1", name: "Ahmad Hassan", initials: "AH", lastActive: "2 hours ago", totalWeight: 87, proximity: 2.3, assigned: false },
-  { id: "v2", name: "Fatimah Zahra", initials: "FZ", lastActive: "30 min ago", totalWeight: 234, proximity: 1.5, assigned: false },
-  { id: "v3", name: "Razak Mahmud", initials: "RM", lastActive: "1 hour ago", totalWeight: 198, proximity: 3.2, assigned: false },
-  { id: "v4", name: "Siti Nurhaliza", initials: "SN", lastActive: "4 hours ago", totalWeight: 187, proximity: 4.1, assigned: false },
-  { id: "v5", name: "Hafiz Abdullah", initials: "HA", lastActive: "15 min ago", totalWeight: 156, proximity: 0.8, assigned: false },
-  { id: "v6", name: "Nurul Huda", initials: "NH", lastActive: "1 day ago", totalWeight: 142, proximity: 5.5, assigned: false },
+  { volunteerId: "v1", volunteerName: "Ahmad Hassan", initials: "AH", lastActive: "2 hours ago", volunteerTotalVerifiedWeight: 87, proximity: 2.3, assigned: false },
+  { volunteerId: "v2", volunteerName: "Fatimah Zahra", initials: "FZ", lastActive: "30 min ago", volunteerTotalVerifiedWeight: 234, proximity: 1.5, assigned: false },
+  { volunteerId: "v3", volunteerName: "Razak Mahmud", initials: "RM", lastActive: "1 hour ago", volunteerTotalVerifiedWeight: 198, proximity: 3.2, assigned: false },
+  { volunteerId: "v4", volunteerName: "Siti Nurhaliza", initials: "SN", lastActive: "4 hours ago", volunteerTotalVerifiedWeight: 187, proximity: 4.1, assigned: false },
+  { volunteerId: "v5", volunteerName: "Hafiz Abdullah", initials: "HA", lastActive: "15 min ago", volunteerTotalVerifiedWeight: 156, proximity: 0.8, assigned: false },
+  { volunteerId: "v6", volunteerName: "Nurul Huda", initials: "NH", lastActive: "1 day ago", volunteerTotalVerifiedWeight: 142, proximity: 5.5, assigned: false },
 ];
 
-const initialSchedules: Schedule[] = [
-  { id: "1", title: "Seberang Takir Beach Cleanup", location: "Seberang Takir", dateTime: "Dec 10, 2024 8:00 AM", priority: "high", debrisType: "Plastic", estimatedQuantity: 150, assignedVolunteers: ["v1", "v2", "v3"], requiredVolunteers: 10, status: "upcoming", weather: "sunny" },
-  { id: "2", title: "Batu Buruk Drive", location: "Batu Buruk Beach", dateTime: "Dec 12, 2024 7:30 AM", priority: "medium", debrisType: "Mixed", estimatedQuantity: 80, assignedVolunteers: ["v4", "v5"], requiredVolunteers: 6, status: "upcoming", weather: "cloudy" },
-  { id: "3", title: "Dungun Coast Cleanup", location: "Dungun Coast", dateTime: "Dec 15, 2024 8:00 AM", priority: "low", debrisType: "Fishing Gear", estimatedQuantity: 200, assignedVolunteers: [], requiredVolunteers: 15, status: "upcoming", weather: "rainy" },
-  { id: "4", title: "Marang Beach Initiative", location: "Marang Beach", dateTime: "Dec 8, 2024 7:00 AM", priority: "high", debrisType: "Organic", estimatedQuantity: 45, assignedVolunteers: ["v1", "v2", "v3", "v4", "v5", "v6"], requiredVolunteers: 6, status: "completed", weather: "sunny" },
+const initialSchedules: CleanupSchedule[] = [
+  { scheduleId: "1", scheduleLocation: "Seberang Takir", scheduleDateTime: "Dec 10, 2024 8:00 AM", schedulePriorityLevel: "high", scheduleDebrisTargetType: "Plastic", scheduleEstimatedQuantity: "150", assignedVolunteers: ["v1", "v2", "v3"], scheduleRequiredVolunteerCount: 10, scheduleStatus: "UPCOMING" },
+  { scheduleId: "2", scheduleLocation: "Batu Buruk Beach", scheduleDateTime: "Dec 12, 2024 7:30 AM", schedulePriorityLevel: "medium", scheduleDebrisTargetType: "Mixed", scheduleEstimatedQuantity: "80", assignedVolunteers: ["v4", "v5"], scheduleRequiredVolunteerCount: 6, scheduleStatus: "UPCOMING" },
+  { scheduleId: "3", scheduleLocation: "Dungun Coast", scheduleDateTime: "Dec 15, 2024 8:00 AM", schedulePriorityLevel: "low", scheduleDebrisTargetType: "Fishing Gear", scheduleEstimatedQuantity: "200", assignedVolunteers: [], scheduleRequiredVolunteerCount: 15, scheduleStatus: "UPCOMING" },
+  { scheduleId: "4", scheduleLocation: "Marang Beach", scheduleDateTime: "Dec 8, 2024 7:00 AM", schedulePriorityLevel: "high", scheduleDebrisTargetType: "Organic", scheduleEstimatedQuantity: "45", assignedVolunteers: ["v1", "v2", "v3", "v4", "v5", "v6"], scheduleRequiredVolunteerCount: 6, scheduleStatus: "COMPLETED" },
 ];
-
-const WeatherIcon = ({ weather }: { weather: string }) => {
-  switch (weather) {
-    case "sunny": return <Sun className="h-4 w-4 text-warning" />;
-    case "cloudy": return <Cloud className="h-4 w-4 text-muted-foreground" />;
-    case "rainy": return <CloudRain className="h-4 w-4 text-primary" />;
-    default: return null;
-  }
-};
 
 export default function ScheduleManager() {
   const [searchParams] = useSearchParams();
   const [scheduleList, setScheduleList] = useState(initialSchedules);
-  const [showCreateForm, setShowCreateForm] = useState(searchParams.has("hotspot"));
+  const [showForm, setShowForm] = useState(searchParams.has("hotspot"));
+  const [editingScheduleId, setEditingScheduleId] = useState<string | null>(null);
   const [expandedScheduleId, setExpandedScheduleId] = useState<string | null>(null);
-  const [volunteerList, setVolunteerList] = useState(volunteers);
+  const [volunteerList] = useState(volunteers);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
-    title: "",
-    location: searchParams.get("hotspot") ? "From Hotspot" : "",
+    scheduleLocation: searchParams.get("hotspot") ? "From Hotspot" : "",
     date: "",
     time: "08:00",
-    priority: "medium",
-    debrisType: "",
-    estimatedQuantity: "",
-    requiredVolunteers: "",
-    notes: "",
+    schedulePriorityLevel: "medium",
+    scheduleDebrisTargetType: "",
+    scheduleEstimatedQuantity: "",
+    scheduleRequiredVolunteerCount: "",
   });
 
-  const upcomingSchedules = scheduleList.filter(s => s.status === "upcoming");
-  const completedSchedules = scheduleList.filter(s => s.status === "completed");
+  const upcomingSchedules = scheduleList.filter(s => s.scheduleStatus === "UPCOMING");
+  const completedSchedules = scheduleList.filter(s => s.scheduleStatus === "COMPLETED");
+
+  const resetForm = () => {
+    setFormData({ 
+      scheduleLocation: "", 
+      date: "", 
+      time: "08:00", 
+      schedulePriorityLevel: "medium", 
+      scheduleDebrisTargetType: "", 
+      scheduleEstimatedQuantity: "", 
+      scheduleRequiredVolunteerCount: "" 
+    });
+    setEditingScheduleId(null);
+    setShowForm(false);
+  };
 
   const handleCreate = () => {
-    const newSchedule: Schedule = {
-      id: Date.now().toString(),
-      title: formData.title,
-      location: formData.location,
-      dateTime: `${formData.date} ${formData.time}`,
-      priority: formData.priority as "high" | "medium" | "low",
-      debrisType: formData.debrisType,
-      estimatedQuantity: parseInt(formData.estimatedQuantity) || 0,
+    const newSchedule: CleanupSchedule = {
+      scheduleId: Date.now().toString(),
+      scheduleLocation: formData.scheduleLocation,
+      scheduleDateTime: `${formData.date} ${formData.time}`,
+      schedulePriorityLevel: formData.schedulePriorityLevel as "high" | "medium" | "low",
+      scheduleDebrisTargetType: formData.scheduleDebrisTargetType,
+      scheduleEstimatedQuantity: formData.scheduleEstimatedQuantity,
       assignedVolunteers: [],
-      requiredVolunteers: parseInt(formData.requiredVolunteers) || 5,
-      status: "upcoming",
-      weather: "sunny",
+      scheduleRequiredVolunteerCount: parseInt(formData.scheduleRequiredVolunteerCount) || 5,
+      scheduleStatus: "UPCOMING",
     };
     setScheduleList(prev => [newSchedule, ...prev]);
-    setShowCreateForm(false);
-    setFormData({ title: "", location: "", date: "", time: "08:00", priority: "medium", debrisType: "", estimatedQuantity: "", requiredVolunteers: "", notes: "" });
+    resetForm();
     toast({ title: "Schedule created", description: "You can now assign volunteers" });
   };
 
+  const handleEdit = (schedule: CleanupSchedule) => {
+    const [datePart, timePart] = schedule.scheduleDateTime.split(" ");
+    setFormData({
+      scheduleLocation: schedule.scheduleLocation,
+      date: datePart,
+      time: timePart || "08:00",
+      schedulePriorityLevel: schedule.schedulePriorityLevel,
+      scheduleDebrisTargetType: schedule.scheduleDebrisTargetType,
+      scheduleEstimatedQuantity: schedule.scheduleEstimatedQuantity,
+      scheduleRequiredVolunteerCount: schedule.scheduleRequiredVolunteerCount.toString(),
+    });
+    setEditingScheduleId(schedule.scheduleId);
+    setShowForm(true);
+  };
+
+  const handleUpdate = () => {
+    setScheduleList(prev => prev.map(s => {
+      if (s.scheduleId !== editingScheduleId) return s;
+      return {
+        ...s,
+        scheduleLocation: formData.scheduleLocation,
+        scheduleDateTime: `${formData.date} ${formData.time}`,
+        schedulePriorityLevel: formData.schedulePriorityLevel as "high" | "medium" | "low",
+        scheduleDebrisTargetType: formData.scheduleDebrisTargetType,
+        scheduleEstimatedQuantity: formData.scheduleEstimatedQuantity,
+        scheduleRequiredVolunteerCount: parseInt(formData.scheduleRequiredVolunteerCount) || 5,
+      };
+    }));
+    resetForm();
+    toast({ title: "Schedule updated" });
+  };
+
   const handleDelete = (id: string) => {
-    setScheduleList(prev => prev.filter(s => s.id !== id));
+    setScheduleList(prev => prev.filter(s => s.scheduleId !== id));
     toast({ title: "Schedule deleted", variant: "destructive" });
   };
 
   const toggleVolunteerAssignment = (scheduleId: string, volunteerId: string) => {
     setScheduleList(prev => prev.map(s => {
-      if (s.id !== scheduleId) return s;
+      if (s.scheduleId !== scheduleId) return s;
       const isAssigned = s.assignedVolunteers.includes(volunteerId);
       return {
         ...s,
@@ -126,34 +157,32 @@ export default function ScheduleManager() {
   };
 
   const autoAssignVolunteers = (scheduleId: string) => {
-    const schedule = scheduleList.find(s => s.id === scheduleId);
+    const schedule = scheduleList.find(s => s.scheduleId === scheduleId);
     if (!schedule) return;
 
-    const needed = schedule.requiredVolunteers - schedule.assignedVolunteers.length;
+    const needed = schedule.scheduleRequiredVolunteerCount - schedule.assignedVolunteers.length;
     if (needed <= 0) return;
 
-    // Sort by proximity and assign
     const available = volunteerList
-      .filter(v => !schedule.assignedVolunteers.includes(v.id))
+      .filter(v => !schedule.assignedVolunteers.includes(v.volunteerId))
       .sort((a, b) => a.proximity - b.proximity)
       .slice(0, needed);
 
     setScheduleList(prev => prev.map(s => {
-      if (s.id !== scheduleId) return s;
+      if (s.scheduleId !== scheduleId) return s;
       return {
         ...s,
-        assignedVolunteers: [...s.assignedVolunteers, ...available.map(v => v.id)]
+        assignedVolunteers: [...s.assignedVolunteers, ...available.map(v => v.volunteerId)]
       };
     }));
 
     toast({ title: `${available.length} volunteers auto-assigned`, description: "Based on proximity" });
   };
 
-  const getVolunteerById = (id: string) => volunteerList.find(v => v.id === id);
+  const getVolunteerById = (id: string) => volunteerList.find(v => v.volunteerId === id);
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
         <div className="px-4 md:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -167,7 +196,7 @@ export default function ScheduleManager() {
               <p className="text-xs text-muted-foreground">{upcomingSchedules.length} upcoming • Manage volunteers inline</p>
             </div>
           </div>
-          <Button onClick={() => setShowCreateForm(true)}>
+          <Button onClick={() => { resetForm(); setShowForm(true); }}>
             <Plus className="h-4 w-4 mr-2" />
             Create Schedule
           </Button>
@@ -175,13 +204,13 @@ export default function ScheduleManager() {
       </header>
 
       <main className="p-6 max-w-6xl mx-auto space-y-8">
-        {/* Create Form Modal */}
-        {showCreateForm && (
+        {/* Create/Edit Form */}
+        {showForm && (
           <Card className="border-primary">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>Create New Schedule</CardTitle>
-                <Button variant="ghost" size="icon" onClick={() => setShowCreateForm(false)}>
+                <CardTitle>{editingScheduleId ? "Edit Schedule" : "Create New Schedule"}</CardTitle>
+                <Button variant="ghost" size="icon" onClick={resetForm}>
                   <X className="h-4 w-4" />
                 </Button>
               </div>
@@ -189,19 +218,19 @@ export default function ScheduleManager() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Schedule Title</Label>
+                  <Label>Schedule Location</Label>
                   <Input 
-                    value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="e.g., Seberang Takir Cleanup"
+                    value={formData.scheduleLocation}
+                    onChange={(e) => setFormData(prev => ({ ...prev, scheduleLocation: e.target.value }))}
+                    placeholder="Beach/coastal location"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Location</Label>
+                  <Label>Debris Target Type</Label>
                   <Input 
-                    value={formData.location}
-                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                    placeholder="Beach/coastal location"
+                    value={formData.scheduleDebrisTargetType}
+                    onChange={(e) => setFormData(prev => ({ ...prev, scheduleDebrisTargetType: e.target.value }))}
+                    placeholder="e.g., Plastic, Mixed"
                   />
                 </div>
               </div>
@@ -224,15 +253,15 @@ export default function ScheduleManager() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Priority</Label>
+                  <Label>Priority Level</Label>
                   <div className="flex gap-2">
                     {["high", "medium", "low"].map(p => (
                       <Button
                         key={p}
                         type="button"
-                        variant={formData.priority === p ? "secondary" : "outline"}
+                        variant={formData.schedulePriorityLevel === p ? "secondary" : "outline"}
                         size="sm"
-                        onClick={() => setFormData(prev => ({ ...prev, priority: p }))}
+                        onClick={() => setFormData(prev => ({ ...prev, schedulePriorityLevel: p }))}
                         className="capitalize"
                       >
                         {p}
@@ -242,86 +271,67 @@ export default function ScheduleManager() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label>Debris Type</Label>
-                  <Input 
-                    value={formData.debrisType}
-                    onChange={(e) => setFormData(prev => ({ ...prev, debrisType: e.target.value }))}
-                    placeholder="e.g., Plastic, Mixed"
-                  />
-                </div>
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Estimated Quantity (kg)</Label>
                   <Input 
                     type="number"
-                    value={formData.estimatedQuantity}
-                    onChange={(e) => setFormData(prev => ({ ...prev, estimatedQuantity: e.target.value }))}
+                    value={formData.scheduleEstimatedQuantity}
+                    onChange={(e) => setFormData(prev => ({ ...prev, scheduleEstimatedQuantity: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Required Volunteers</Label>
+                  <Label>Required Volunteer Count</Label>
                   <Input 
                     type="number"
-                    value={formData.requiredVolunteers}
-                    onChange={(e) => setFormData(prev => ({ ...prev, requiredVolunteers: e.target.value }))}
+                    value={formData.scheduleRequiredVolunteerCount}
+                    onChange={(e) => setFormData(prev => ({ ...prev, scheduleRequiredVolunteerCount: e.target.value }))}
                   />
-                </div>
-              </div>
-
-              {/* Weather Widget Placeholder */}
-              <div className="p-4 rounded-lg bg-muted/50 flex items-center gap-3">
-                <Sun className="h-8 w-8 text-warning" />
-                <div>
-                  <p className="font-medium">Weather Forecast</p>
-                  <p className="text-sm text-muted-foreground">Sunny, 28°C - Good conditions for cleanup</p>
                 </div>
               </div>
 
               <div className="flex justify-end gap-3 pt-4">
-                <Button variant="outline" onClick={() => setShowCreateForm(false)}>Cancel</Button>
-                <Button onClick={handleCreate}>Create Schedule</Button>
+                <Button variant="outline" onClick={resetForm}>Cancel</Button>
+                <Button onClick={editingScheduleId ? handleUpdate : handleCreate}>
+                  {editingScheduleId ? "Update Schedule" : "Create Schedule"}
+                </Button>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Upcoming Schedules with Inline Volunteer Assignment */}
+        {/* Upcoming Schedules */}
         <section>
           <h2 className="font-display font-semibold text-lg mb-4">Upcoming (Next 7 Days)</h2>
           <div className="space-y-4">
             {upcomingSchedules.map(schedule => (
               <Card 
-                key={schedule.id}
+                key={schedule.scheduleId}
                 className={cn(
                   "border-l-4 overflow-hidden",
-                  schedule.priority === "high" && "border-l-destructive",
-                  schedule.priority === "medium" && "border-l-warning",
-                  schedule.priority === "low" && "border-l-muted-foreground"
+                  schedule.schedulePriorityLevel === "high" && "border-l-destructive",
+                  schedule.schedulePriorityLevel === "medium" && "border-l-warning",
+                  schedule.schedulePriorityLevel === "low" && "border-l-muted-foreground"
                 )}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold">{schedule.title}</h3>
-                        <Badge variant={schedule.priority === "high" ? "destructive" : "outline"} className="capitalize">
-                          {schedule.priority}
+                        <h3 className="font-semibold">{schedule.scheduleLocation}</h3>
+                        <Badge variant={schedule.schedulePriorityLevel === "high" ? "destructive" : "outline"} className="capitalize">
+                          {schedule.schedulePriorityLevel}
                         </Badge>
-                        <Badge variant="outline">{schedule.debrisType}</Badge>
+                        <Badge variant="outline">{schedule.scheduleDebrisTargetType}</Badge>
                       </div>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <MapPin className="h-3.5 w-3.5" />
-                          {schedule.location}
+                          {schedule.scheduleLocation}
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="h-3.5 w-3.5" />
-                          {schedule.dateTime}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <WeatherIcon weather={schedule.weather} />
-                          {schedule.weather}
+                          {schedule.scheduleDateTime}
                         </span>
                       </div>
                     </div>
@@ -332,46 +342,46 @@ export default function ScheduleManager() {
                           <Users className="h-4 w-4 text-muted-foreground" />
                           <span className={cn(
                             "font-medium",
-                            schedule.assignedVolunteers.length < schedule.requiredVolunteers && "text-warning"
+                            schedule.assignedVolunteers.length < schedule.scheduleRequiredVolunteerCount && "text-warning"
                           )}>
-                            {schedule.assignedVolunteers.length}/{schedule.requiredVolunteers}
+                            {schedule.assignedVolunteers.length}/{schedule.scheduleRequiredVolunteerCount}
                           </span>
                         </div>
                         <p className="text-xs text-muted-foreground">volunteers</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium">{schedule.estimatedQuantity}kg</p>
+                        <p className="font-medium">{schedule.scheduleEstimatedQuantity}kg</p>
                         <p className="text-xs text-muted-foreground">estimated</p>
                       </div>
                       <div className="flex gap-1">
                         <Button 
-                          variant={expandedScheduleId === schedule.id ? "secondary" : "ghost"} 
+                          variant={expandedScheduleId === schedule.scheduleId ? "secondary" : "ghost"} 
                           size="icon"
-                          onClick={() => setExpandedScheduleId(expandedScheduleId === schedule.id ? null : schedule.id)}
+                          onClick={() => setExpandedScheduleId(expandedScheduleId === schedule.scheduleId ? null : schedule.scheduleId)}
                         >
                           <UserPlus className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" onClick={() => handleEdit(schedule)}>
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(schedule.id)}>
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(schedule.scheduleId)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
                     </div>
                   </div>
 
-                  {schedule.assignedVolunteers.length < schedule.requiredVolunteers && (
+                  {schedule.assignedVolunteers.length < schedule.scheduleRequiredVolunteerCount && (
                     <div className="mt-3 p-2 rounded-lg bg-warning/10 flex items-center justify-between text-sm text-warning">
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="h-4 w-4" />
-                        Needs {schedule.requiredVolunteers - schedule.assignedVolunteers.length} more volunteers
+                        Needs {schedule.scheduleRequiredVolunteerCount - schedule.assignedVolunteers.length} more volunteers
                       </div>
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         className="text-warning hover:text-warning"
-                        onClick={() => autoAssignVolunteers(schedule.id)}
+                        onClick={() => autoAssignVolunteers(schedule.scheduleId)}
                       >
                         <Zap className="h-4 w-4 mr-1" />
                         Auto-Assign
@@ -379,8 +389,7 @@ export default function ScheduleManager() {
                     </div>
                   )}
 
-                  {/* Assigned Volunteers Preview */}
-                  {schedule.assignedVolunteers.length > 0 && expandedScheduleId !== schedule.id && (
+                  {schedule.assignedVolunteers.length > 0 && expandedScheduleId !== schedule.scheduleId && (
                     <div className="mt-3 flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">Assigned:</span>
                       <div className="flex -space-x-2">
@@ -400,60 +409,52 @@ export default function ScheduleManager() {
                       </div>
                     </div>
                   )}
-                </CardContent>
 
-                {/* Expanded Volunteer Assignment Panel */}
-                {expandedScheduleId === schedule.id && (
-                  <div className="border-t bg-muted/30 p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-medium text-sm">Assign Volunteers</h4>
-                      <div className="flex gap-2">
+                  {/* Expanded Volunteer Assignment Panel */}
+                  {expandedScheduleId === schedule.scheduleId && (
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-medium text-sm">Assign Volunteers</h4>
                         <Button 
                           variant="outline" 
                           size="sm"
-                          onClick={() => autoAssignVolunteers(schedule.id)}
+                          onClick={() => autoAssignVolunteers(schedule.scheduleId)}
                         >
-                          <Zap className="h-3.5 w-3.5 mr-1" />
+                          <Zap className="h-4 w-4 mr-1" />
                           Auto-Assign by Proximity
                         </Button>
                       </div>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {volunteerList.map(volunteer => {
-                        const isAssigned = schedule.assignedVolunteers.includes(volunteer.id);
-                        return (
-                          <div 
-                            key={volunteer.id}
-                            onClick={() => toggleVolunteerAssignment(schedule.id, volunteer.id)}
-                            className={cn(
-                              "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all",
-                              isAssigned 
-                                ? "border-primary bg-primary/5" 
-                                : "border-border hover:border-primary/50 hover:bg-muted/50"
-                            )}
-                          >
-                            <div className="flex items-center gap-2 flex-1">
-                              <GripVertical className="h-4 w-4 text-muted-foreground/50" />
+                      <div className="grid grid-cols-2 gap-2">
+                        {volunteerList.map(volunteer => {
+                          const isAssigned = schedule.assignedVolunteers.includes(volunteer.volunteerId);
+                          return (
+                            <div
+                              key={volunteer.volunteerId}
+                              className={cn(
+                                "flex items-center gap-3 p-2 rounded-lg border cursor-pointer transition-colors",
+                                isAssigned ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"
+                              )}
+                              onClick={() => toggleVolunteerAssignment(schedule.scheduleId, volunteer.volunteerId)}
+                            >
+                              <Checkbox checked={isAssigned} className="pointer-events-none" />
                               <Avatar className="h-8 w-8">
                                 <AvatarFallback className="text-xs">{volunteer.initials}</AvatarFallback>
                               </Avatar>
-                              <div className="min-w-0">
-                                <p className="font-medium text-sm truncate">{volunteer.name}</p>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">{volunteer.volunteerName}</p>
                                 <p className="text-xs text-muted-foreground">{volunteer.proximity}km away</p>
                               </div>
+                              <div className="text-right">
+                                <p className="text-xs font-medium">{volunteer.volunteerTotalVerifiedWeight}kg</p>
+                                <p className="text-[10px] text-muted-foreground">verified</p>
+                              </div>
                             </div>
-                            <div className={cn(
-                              "h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors",
-                              isAssigned ? "border-primary bg-primary" : "border-muted-foreground/30"
-                            )}>
-                              {isAssigned && <Check className="h-3 w-3 text-primary-foreground" />}
-                            </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </CardContent>
               </Card>
             ))}
           </div>
@@ -464,25 +465,21 @@ export default function ScheduleManager() {
           <h2 className="font-display font-semibold text-lg mb-4">Completed</h2>
           <div className="space-y-3">
             {completedSchedules.map(schedule => (
-              <Card key={schedule.id} className="opacity-70">
+              <Card key={schedule.scheduleId} className="border-l-4 border-l-success opacity-75">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-medium">{schedule.title}</h3>
-                      <p className="text-sm text-muted-foreground">{schedule.dateTime}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex -space-x-2">
-                        {schedule.assignedVolunteers.slice(0, 3).map(vId => {
-                          const v = getVolunteerById(vId);
-                          return v ? (
-                            <Avatar key={vId} className="h-6 w-6 border-2 border-background">
-                              <AvatarFallback className="text-xs">{v.initials}</AvatarFallback>
-                            </Avatar>
-                          ) : null;
-                        })}
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold">{schedule.scheduleLocation}</h3>
+                        <Badge variant="success">Completed</Badge>
                       </div>
-                      <Badge variant="success">Completed</Badge>
+                      <p className="text-sm text-muted-foreground mt-1">{schedule.scheduleDateTime}</p>
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <div className="text-right">
+                        <p className="font-medium">{schedule.assignedVolunteers.length} volunteers</p>
+                        <p className="text-xs text-muted-foreground">{schedule.scheduleEstimatedQuantity}kg collected</p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
